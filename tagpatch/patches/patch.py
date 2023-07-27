@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from tagpatch.utils.types import Table
+from tagpatch.types import Table
 
 
 class Patch(ABC):
@@ -30,4 +30,4 @@ class Patch(ABC):
 
     @property
     def table_format(self) -> str:
-        return "pretty"
+        return "grid"
