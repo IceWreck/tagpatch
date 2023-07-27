@@ -16,9 +16,9 @@ class ArtistNamePatch(patch.Patch):
     NEW_DELIMITER = "/"
     OLD_DELIMITERS = [",", "//", ";"]
 
-    def __init__(self, src: pathlib.Path, dst: pathlib.Path):
+    def __init__(self, src: pathlib.Path, dst: pathlib.Path, nested: bool):
         super().__init__()
-        self.tracks = utils.get_tracks(src, dst)  # [(absolute_src.mp3, absolute_dst.mp3), (), ...]
+        self.tracks = utils.get_tracks(src, dst, nested)  # [(absolute_src.mp3, absolute_dst.mp3), (), ...]
 
     @classmethod
     def help(cls) -> str:

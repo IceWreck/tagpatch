@@ -30,9 +30,16 @@ def cli():
     "--assume-yes",
     required=False,
     default=False,
-    type=click.BOOL,
+    is_flag=True,
 )
-def artist_name(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool):
+@click.option(
+    "-n",
+    "--nested",
+    required=False,
+    default=False,
+    is_flag=True,
+)
+def artist_name(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool):
     # If destination isn't provided, overwrite the source.
     if dst is None:
         dst: pathlib.Path = src
@@ -51,8 +58,11 @@ def artist_name(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool):
         )
 
     # Display the dry run table and ask for confirmation.
-    patch = artist_name_patch.ArtistNamePatch(src, dst)
+    patch = artist_name_patch.ArtistNamePatch(src, dst, nested)
     table = patch.mock()
+    if len(table) == 0:
+        click.echo("No music files found in src.")
+        sys.exit(0)
     click.echo(
         tabulate.tabulate(
             table, headers=patch.table_headers, tablefmt=patch.table_format, maxcolwidths=30
