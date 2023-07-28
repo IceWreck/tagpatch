@@ -4,7 +4,7 @@ KNOWN_TRACK_EXTENSIONS = {".ogg", ".mp3", ".m4a", ".flac", ".opus", ".wav"}
 
 
 def get_tracks(
-        src: pathlib.Path, dst: pathlib.Path, nested: bool = False
+    src: pathlib.Path, dst: pathlib.Path, nested: bool = False
 ) -> list[tuple[pathlib.Path, pathlib.Path]]:
     """
     Get a list of source and destination absolute paths for track files.
