@@ -31,3 +31,7 @@ class Patch(ABC):
     @property
     def table_format(self) -> str:
         return "grid"
+
+    @property
+    def table_max_col_width(self) -> int:
+        return 30

@@ -39,7 +39,9 @@ def cli():
     default=False,
     is_flag=True,
 )
-def artist_name(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool):
+def artist_name(
+    src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool
+):
     # If destination isn't provided, overwrite the source.
     if dst is None:
         dst: pathlib.Path = src
@@ -65,7 +67,10 @@ def artist_name(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, n
         sys.exit(0)
     click.echo(
         tabulate.tabulate(
-            table, headers=patch.table_headers, tablefmt=patch.table_format, maxcolwidths=30
+            table,
+            headers=patch.table_headers,
+            tablefmt=patch.table_format,
+            maxcolwidths=patch.table_max_col_width,
         )
     )
     if not assume_yes:
