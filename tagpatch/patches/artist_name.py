@@ -1,17 +1,14 @@
 import pathlib
 import shutil
 import click
-
+import music_tag
 from tagpatch import utils
 from tagpatch.patches import patch
 from tagpatch.types import Table
-import music_tag
 
 
 class ArtistNamePatch(patch.Patch):
-    _HELP_TEXT = (
-        "A patch which replaces existing delimiters in the `Artist` tag with the `/` seperator."
-    )
+    _HELP_TEXT = "A patch which replaces existing delimiters in the `Artist` tag with the `/` seperator."
     TAG_NAME = "Artist"
     NEW_DELIMITER = "/"
     OLD_DELIMITERS = [",", "//", ";"]

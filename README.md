@@ -1,6 +1,6 @@
 # tagpatch
 
-CLI tool which applies common/repetitive patches to music tags.
+CLI tool which automatically applies common/repetitive patches to music tags.
 You should use a GUI tool like [KDE's Kid3](https://kid3.kde.org/) for complicated patches.
 
 ```

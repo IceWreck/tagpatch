@@ -1,4 +1,5 @@
 import pathlib
+import re
 
 KNOWN_TRACK_EXTENSIONS = {".ogg", ".mp3", ".m4a", ".flac", ".opus", ".wav"}
 
@@ -39,3 +40,9 @@ def get_tracks(
         tracks.append((src.resolve(), dst.resolve()))
 
     return tracks
+
+
+def escape_ansi(line):
+    """Remove ANSI color codes from text."""
+    ansi_escape = re.compile(r"(?:\x1B[@-_]|[\x80-\x9F])[0-?]*[ -/]*[@-~]")
+    return ansi_escape.sub("", line)
