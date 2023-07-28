@@ -13,7 +13,8 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+build/**
+!build/.gitkeep
 develop-eggs/
 dist/
 downloads/
