@@ -15,7 +15,7 @@ def get_tracks(
             "Source and destination must be both files or both directories."
         )
 
-    tracks = []
+    tracks: list[tuple[pathlib.Path, pathlib.Path]] = []
 
     if src.is_dir():
         if nested:
@@ -27,8 +27,10 @@ def get_tracks(
 
         for file in files_list:
             if file.is_file() and file.suffix in KNOWN_TRACK_EXTENSIONS:
-                # Since we're looking in nested dirs, if src = dst overwrite og files.
+                # Since we may be looking in nested dirs, if src = dst overwrite original files.
                 # If not then place all new files in dst directory.
+                # Note that if src != dst and nested = True there may be a situation where both
+                # `src/foo/song.mp3` and `src/bar/song.mp3` will be written to `dst/song.mp3`.
                 if overwrite_src:
                     tracks.append((file.resolve(), file.resolve().parent / file.name))
                 else:
