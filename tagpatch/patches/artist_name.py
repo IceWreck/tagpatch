@@ -10,7 +10,7 @@ import music_tag
 
 class ArtistNamePatch(patch.Patch):
     _HELP_TEXT = (
-        "A patch which replaces the seperator in the `Artist` tag with a new seperator."
+        "A patch which replaces existing delimiters in the `Artist` tag with the `/` seperator."
     )
     TAG_NAME = "Artist"
     NEW_DELIMITER = "/"
@@ -30,10 +30,8 @@ class ArtistNamePatch(patch.Patch):
     def replace(cls, original: str) -> str:
         modified = original
         for delimiter in cls.OLD_DELIMITERS:
-            modified = modified.replace(f"{delimiter} ", cls.NEW_DELIMITER)
-            modified = modified.replace(f" {delimiter} ", cls.NEW_DELIMITER)
-            modified = modified.replace(f" {delimiter}", cls.NEW_DELIMITER)
-            modified = modified.replace(delimiter, cls.NEW_DELIMITER)
+            seperated = modified.split(delimiter)
+            modified = cls.NEW_DELIMITER.join([item.strip() for item in seperated])
         return modified
 
     def mock(self) -> Table:
