@@ -3,6 +3,26 @@
 CLI tool which automatically applies common/repetitive patches to music tags.
 You should use a GUI tool like [KDE's Kid3](https://kid3.kde.org/) for complicated patches.
 
+## Install
+
+**From GitHub**
+
+```shell
+sudo wget https://github.com/IceWreck/tagpatch/releases/download/v0.1.1/tagpatch-v0.1.1 \
+  -O /usr/local/bin/tagpatch && sudo chmod +x /usr/local/bin/tagpatch
+```
+
+
+**Using pip**
+
+```
+pip install tagpatch
+```
+
+It's recommended to install this with `--user` or inside a venv.
+
+## Usage
+
 ```
 [icewreck@zacian ~]$ tagpatch
 Usage: tagpatch [OPTIONS] COMMAND [ARGS]...
