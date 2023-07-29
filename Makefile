@@ -19,3 +19,9 @@ build:
 
 test:
 	python -m unittest
+
+publish:
+	pip-compile pyproject.toml
+	python -m build
+	twine check dist/*
+	twine upload dist/*
