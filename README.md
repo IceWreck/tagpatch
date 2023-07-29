@@ -21,6 +21,16 @@ pip install tagpatch
 
 It's recommended to install this with `--user` or inside a venv.
 
+## Example
+
+```shell
+tagpatch embed-lrc -n -s ~/Music
+```
+The changes will be highlighted in red. Confirm to continue.
+
+![scrot](files/scrot1.png)
+
+
 ## Usage
 
 ```
