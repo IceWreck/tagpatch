@@ -3,6 +3,7 @@ import pathlib
 import tabulate
 import sys
 from tagpatch.patches import artist_name as artist_name_patch
+from tagpatch import options
 
 
 @click.group()
@@ -11,40 +12,16 @@ def cli():
 
 
 @cli.command(help=artist_name_patch.ArtistNamePatch.help())
-@click.option(
-    "-s",
-    "--src",
-    required=False,
-    default=pathlib.Path().resolve(),
-    show_default=True,
-    type=click.Path(exists=True, writable=True, path_type=pathlib.Path),
-)
-@click.option(
-    "-d",
-    "--dst",
-    required=False,
-    type=click.Path(writable=True, path_type=pathlib.Path),
-)
-@click.option(
-    "-y",
-    "--assume-yes",
-    required=False,
-    default=False,
-    is_flag=True,
-)
-@click.option(
-    "-n",
-    "--nested",
-    required=False,
-    default=False,
-    is_flag=True,
-)
+@options.src
+@options.dst
+@options.assume_yes
+@options.nested
 def artist_name(
     src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool
 ):
     # If destination isn't provided, overwrite the source.
     if dst is None:
-        dst: pathlib.Path = src
+        dst = src
 
     # Create destination if it doesn't exist.
     if not dst.exists():
@@ -61,7 +38,7 @@ def artist_name(
 
     # Display the dry run table and ask for confirmation.
     patch = artist_name_patch.ArtistNamePatch(src, dst, nested)
-    table = patch.mock()
+    table = patch.prepare()
     if len(table) == 0:
         click.echo("No music files found in src.")
         sys.exit(0)

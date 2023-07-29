@@ -2,6 +2,7 @@ import pathlib
 import shutil
 import click
 import music_tag
+import mutagen
 from tagpatch import utils
 from tagpatch.patches import patch
 from tagpatch.types import Table
@@ -15,6 +16,7 @@ class ArtistNamePatch(patch.Patch):
 
     def __init__(self, src: pathlib.Path, dst: pathlib.Path, nested: bool):
         super().__init__()
+        self.table: Table = []
         self.tracks = utils.get_tracks(
             src, dst, nested
         )  # [(absolute_src.mp3, absolute_dst.mp3), (), ...]
@@ -31,13 +33,13 @@ class ArtistNamePatch(patch.Patch):
             modified = cls.NEW_DELIMITER.join([item.strip() for item in seperated])
         return modified
 
-    def mock(self) -> Table:
+    def prepare(self) -> Table:
         table = []
         for track in self.tracks:
             src_file = track[0]
             dst_file = track[1]
 
-            f = music_tag.load_file(src_file)
+            f: mutagen.FileType = music_tag.load_file(src_file)
             original_tag: str = str(f[self.TAG_NAME])
             modified_tag: str = self.replace(original_tag)
             colored_modified_tag = modified_tag
@@ -45,6 +47,7 @@ class ArtistNamePatch(patch.Patch):
                 colored_modified_tag = f"\033[31m{modified_tag}\033[0m"
 
             table.append([original_tag, colored_modified_tag, src_file, dst_file])
+        self.table = table
         return table
 
     @property
@@ -67,7 +70,7 @@ class ArtistNamePatch(patch.Patch):
                     change_log += f"Copied - {dst_file}\n"
 
                 # Change tags in dst_file.
-                f = music_tag.load_file(dst_file)
+                f: mutagen.FileType = music_tag.load_file(dst_file)
                 original_tag: str = str(f[self.TAG_NAME])
                 modified_tag: str = self.replace(original_tag)
                 if original_tag != modified_tag:

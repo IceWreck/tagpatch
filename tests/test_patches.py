@@ -27,7 +27,7 @@ class TestArtistName(unittest.TestCase):
 
     def test_artist_name_mock(self):
         patch = artist_name.ArtistNamePatch(self.src, self.dst, nested=True)
-        table = patch.mock()
+        table = patch.prepare()
         src_track_file = self.src / "song1/test.mp3"
         dst_track_file = self.dst / "test.mp3"
         self.assertEqual(len(table), 1)
@@ -38,7 +38,7 @@ class TestArtistName(unittest.TestCase):
 
     def test_artist_name_patch(self):
         patch = artist_name.ArtistNamePatch(self.src, self.dst, nested=True)
-        table = patch.mock()
+        table = patch.prepare()
         dst_track_file = self.dst / "test.mp3"
         patch.apply()
 

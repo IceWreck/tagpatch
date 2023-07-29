@@ -13,7 +13,7 @@ class Patch(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def mock(self) -> Table:
+    def prepare(self) -> Table:
         """Return a table of changes to be done without executing them."""
         raise NotImplementedError
 
