@@ -8,7 +8,7 @@ You should use a GUI tool like [KDE's Kid3](https://kid3.kde.org/) for complicat
 **From GitHub**
 
 ```shell
-sudo wget https://github.com/IceWreck/tagpatch/releases/download/v0.1.1/tagpatch-v0.1.1 \
+sudo wget https://github.com/IceWreck/tagpatch/releases/download/v0.1.2/tagpatch-v0.1.2 \
   -O /usr/local/bin/tagpatch && sudo chmod +x /usr/local/bin/tagpatch
 ```
 
