@@ -21,6 +21,8 @@ test:
 	python -m unittest
 
 publish:
+	rm -rf dist/
+	rm -rf tagpatch.egg-info
 	pip-compile pyproject.toml
 	python -m build
 	twine check dist/*
