@@ -63,20 +63,23 @@ class ArtistNamePatch(patch.Patch):
                 src_file = track[0]
                 dst_file = track[1]
 
-                # If src_file is not equal to dst_file then copy src_file to dst_file first.
-                dst_file.touch()
-                if not src_file.samefile(dst_file):
-                    shutil.copy2(src_file, dst_file)
-                    change_log += f"Copied - {dst_file}\n"
+                try:
+                    # If src_file is not equal to dst_file then copy src_file to dst_file first.
+                    dst_file.touch()
+                    if not src_file.samefile(dst_file):
+                        shutil.copy2(src_file, dst_file)
+                        change_log += f"Copied - {dst_file}\n"
 
-                # Change tags in dst_file.
-                f: mutagen.FileType = music_tag.load_file(dst_file)
-                original_tag: str = str(f[self.TAG_NAME])
-                modified_tag: str = self.replace(original_tag)
-                if original_tag != modified_tag:
-                    f[self.TAG_NAME] = modified_tag
-                    f.save()
-                    change_log += f"Patched - {dst_file}\n"
+                    # Change tags in dst_file.
+                    f: mutagen.FileType = music_tag.load_file(dst_file)
+                    original_tag: str = str(f[self.TAG_NAME])
+                    modified_tag: str = self.replace(original_tag)
+                    if original_tag != modified_tag:
+                        f[self.TAG_NAME] = modified_tag
+                        f.save()
+                        change_log += f"Patched - {dst_file}\n"
+                except Exception as e:
+                    change_log += f"Error - failed to patch {dst_file}: {e}\n"
 
         # Print the changelog.
         click.echo(change_log)
