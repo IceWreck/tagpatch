@@ -1,8 +1,10 @@
 import pathlib
 import shutil
+
 import click
 import music_tag
 import mutagen
+
 from tagpatch import utils
 from tagpatch.patches import patch
 from tagpatch.types import Table
@@ -15,9 +17,7 @@ class EmbedLyricsPatch(patch.Patch):
     def __init__(self, src: pathlib.Path, dst: pathlib.Path, nested: bool):
         super().__init__()
         self.table: Table = []
-        self.tracks = utils.get_tracks(
-            src, dst, nested
-        )  # [(absolute_src.mp3, absolute_dst.mp3), (), ...]
+        self.tracks = utils.get_tracks(src, dst, nested)  # [(absolute_src.mp3, absolute_dst.mp3), (), ...]
 
     @classmethod
     def help(cls) -> str:

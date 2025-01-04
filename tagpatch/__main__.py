@@ -1,11 +1,12 @@
-import click
 import pathlib
-import tabulate
 import sys
+
+import click
+import tabulate
+
+from tagpatch import options, utils
 from tagpatch.patches import artist_name as artist_name_patch
 from tagpatch.patches import embed_lrc as embed_lrc_patch
-from tagpatch import utils
-from tagpatch import options
 
 
 @click.group()
@@ -18,9 +19,7 @@ def cli():
 @options.dst
 @options.assume_yes
 @options.nested
-def artist_name(
-    src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool
-):
+def artist_name(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool):
     src, dst = utils.prepare_src_dst(src, dst)
 
     # Display the dry run table and ask for confirmation.
@@ -50,9 +49,7 @@ def artist_name(
 @options.dst
 @options.assume_yes
 @options.nested
-def embed_lrc(
-    src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool
-):
+def embed_lrc(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool):
     src, dst = utils.prepare_src_dst(src, dst)
 
     # Display the dry run table and ask for confirmation.

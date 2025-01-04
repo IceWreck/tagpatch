@@ -1,3 +1,3 @@
-from typing import Mapping, Iterable
+from typing import Iterable, Mapping
 
 Table = Mapping[str, Iterable] | Iterable[Iterable]

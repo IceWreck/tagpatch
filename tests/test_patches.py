@@ -1,8 +1,10 @@
-import unittest
 import pathlib
+import unittest
+
 import music_tag
-from tagpatch.patches import artist_name
+
 from tagpatch import utils
+from tagpatch.patches import artist_name
 
 
 class TestArtistName(unittest.TestCase):
@@ -21,9 +23,7 @@ class TestArtistName(unittest.TestCase):
         ]
 
         for replacement in replacements:
-            self.assertEqual(
-                artist_name.ArtistNamePatch.replace(replacement[0]), replacement[1]
-            )
+            self.assertEqual(artist_name.ArtistNamePatch.replace(replacement[0]), replacement[1])
 
     def test_artist_name_mock(self):
         patch = artist_name.ArtistNamePatch(self.src, self.dst, nested=True)

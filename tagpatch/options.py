@@ -1,6 +1,7 @@
 import functools
-import click
 import pathlib
+
+import click
 
 
 def src(f):

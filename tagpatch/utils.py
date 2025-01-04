@@ -1,21 +1,18 @@
 import pathlib
 import re
+
 import click
 
 KNOWN_TRACK_EXTENSIONS = {".ogg", ".mp3", ".m4a", ".flac", ".opus", ".wav"}
 
 
-def get_tracks(
-    src: pathlib.Path, dst: pathlib.Path, nested: bool = False
-) -> list[tuple[pathlib.Path, pathlib.Path]]:
+def get_tracks(src: pathlib.Path, dst: pathlib.Path, nested: bool = False) -> list[tuple[pathlib.Path, pathlib.Path]]:
     """
     Get a list of source and destination absolute paths for track files.
     Input params src and dst must be both files or both directories.
     """
     if not ((src.is_dir() and dst.is_dir()) or (src.is_file() and dst.is_file())):
-        raise ValueError(
-            "Source and destination must be both files or both directories."
-        )
+        raise ValueError("Source and destination must be both files or both directories.")
 
     tracks: list[tuple[pathlib.Path, pathlib.Path]] = []
 
@@ -54,9 +51,7 @@ def ansi_colorify(line):
     return f"\033[31m{line}\033[0m"
 
 
-def prepare_src_dst(
-    src: pathlib.Path, dst: pathlib.Path | None
-) -> tuple[pathlib.Path, pathlib.Path]:
+def prepare_src_dst(src: pathlib.Path, dst: pathlib.Path | None) -> tuple[pathlib.Path, pathlib.Path]:
     """Basic checks and preparation before using the source and destination."""
     # If destination isn't provided, then make it equal to the source.
     if dst is None:
@@ -71,7 +66,5 @@ def prepare_src_dst(
             dst.touch()
     # Source and destination must be of the same type.
     if not ((src.is_dir() and dst.is_dir()) or (src.is_file() and dst.is_file())):
-        raise click.BadParameter(
-            "Source and destination must be both files or both directories."
-        )
+        raise click.BadParameter("Source and destination must be both files or both directories.")
     return src, dst

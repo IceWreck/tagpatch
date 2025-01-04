@@ -6,7 +6,8 @@ PROJECT_NAME := tagpatch
 .PHONY: run format build test
 
 format:
-	black .
+	uv tool run ruff check --select I --fix # fix import
+	uv tool run ruff format # format
 
 run:
 	python -m tagpatch

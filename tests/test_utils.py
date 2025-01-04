@@ -1,5 +1,6 @@
-import unittest
 import pathlib
+import unittest
+
 from tagpatch import utils
 
 
