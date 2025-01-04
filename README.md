@@ -8,7 +8,7 @@ You should use a GUI tool like [KDE's Kid3](https://kid3.kde.org/) for complicat
 **From GitHub**
 
 ```shell
-sudo wget https://github.com/IceWreck/tagpatch/releases/download/v0.1.2/tagpatch-v0.1.2 \
+sudo wget https://github.com/IceWreck/tagpatch/releases/download/v0.1.3/tagpatch-v0.1.3 \
   -O /usr/local/bin/tagpatch && sudo chmod +x /usr/local/bin/tagpatch
 ```
 
@@ -19,7 +19,7 @@ sudo wget https://github.com/IceWreck/tagpatch/releases/download/v0.1.2/tagpatch
 pip install tagpatch
 ```
 
-It's recommended to install this with `--user` or inside a venv.
+It's recommended to install this with `--user` or inside a venv. You can also use `pipx` or `uvx`.
 
 ## Example
 
