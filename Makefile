@@ -15,7 +15,17 @@ run:
 lint:
 	uv tool run ruff check
 
+mypy:
+	mypy ./tagpatch
+
+develop:
+	uv venv
+	uv sync
+	uv pip install -e .
+
 build:
+	uv pip compile pyproject.toml > requirements.txt
+
 	# build standalone binary
 	uvx pex . -r requirements.txt \
 		-o ./build/$(PROJECT_NAME) \
@@ -25,7 +35,6 @@ build:
 	# build python package
 	rm -rf dist/
 	rm -rf tagpatch.egg-info
-	uv pip compile pyproject.toml > requirements.txt
 	uv build
 
 test:

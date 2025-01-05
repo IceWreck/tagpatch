@@ -1,5 +1,6 @@
 import pathlib
 import sys
+from typing import Optional
 
 import click
 import tabulate
@@ -10,7 +11,7 @@ from tagpatch.patches import embed_lrc as embed_lrc_patch
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
@@ -19,7 +20,7 @@ def cli():
 @options.dst
 @options.assume_yes
 @options.nested
-def artist_name(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool):
+def artist_name(src: pathlib.Path, dst: Optional[pathlib.Path], assume_yes: bool, nested: bool) -> None:
     src, dst = utils.prepare_src_dst(src, dst)
 
     # Display the dry run table and ask for confirmation.
@@ -49,7 +50,7 @@ def artist_name(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, n
 @options.dst
 @options.assume_yes
 @options.nested
-def embed_lrc(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool):
+def embed_lrc(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nested: bool) -> None:
     src, dst = utils.prepare_src_dst(src, dst)
 
     # Display the dry run table and ask for confirmation.
@@ -74,7 +75,7 @@ def embed_lrc(src: pathlib.Path, dst: pathlib.Path | None, assume_yes: bool, nes
     click.echo("Applied.")
 
 
-def main():
+def main() -> None:
     # Invoke the click group.
     cli()
 

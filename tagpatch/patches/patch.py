@@ -25,7 +25,7 @@ class Patch(ABC):
 
     @property
     @abstractmethod
-    def table_headers(self) -> list:
+    def table_headers(self) -> list[str]:
         """Headers for the dry-run table."""
         raise NotImplementedError
 

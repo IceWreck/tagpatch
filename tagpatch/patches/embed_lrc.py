@@ -1,5 +1,6 @@
 import pathlib
 import shutil
+from typing import Optional
 
 import click
 import music_tag
@@ -11,10 +12,10 @@ from tagpatch.types import Table
 
 
 class EmbedLyricsPatch(patch.Patch):
-    _HELP_TEXT = "A patch which embeds .lrc files of the same name into the track file."
-    TAG_NAME = "lyrics"
+    _HELP_TEXT: str = "A patch which embeds .lrc files of the same name into the track file."
+    TAG_NAME: str = "lyrics"
 
-    def __init__(self, src: pathlib.Path, dst: pathlib.Path, nested: bool):
+    def __init__(self, src: pathlib.Path, dst: pathlib.Path, nested: bool) -> None:
         super().__init__()
         self.table: Table = []
         self.tracks = utils.get_tracks(src, dst, nested)  # [(absolute_src.mp3, absolute_dst.mp3), (), ...]
@@ -24,7 +25,7 @@ class EmbedLyricsPatch(patch.Patch):
         return cls._HELP_TEXT
 
     @staticmethod
-    def lrc_path(src_file: pathlib.Path) -> pathlib.Path | None:
+    def lrc_path(src_file: pathlib.Path) -> Optional[pathlib.Path]:
         """Returns the path of lrc file for the corresponding src file, if exists."""
         if not src_file.is_file():
             raise ValueError("src_file parameter must be a file")
@@ -41,7 +42,7 @@ class EmbedLyricsPatch(patch.Patch):
 
             colored_lrc_path = ""
             if lrc_file is not None:
-                colored_lrc_path = utils.ansi_colorify(lrc_file)
+                colored_lrc_path = utils.ansi_colorify(str(lrc_file))
 
             self.table.append([colored_lrc_path, src_file, dst_file])
         return self.table

@@ -1,5 +1,6 @@
 import pathlib
 import re
+from typing import Optional
 
 import click
 
@@ -40,18 +41,18 @@ def get_tracks(src: pathlib.Path, dst: pathlib.Path, nested: bool = False) -> li
     return tracks
 
 
-def escape_ansi(line):
+def escape_ansi(line: str) -> str:
     """Remove ANSI color codes from text."""
     ansi_escape = re.compile(r"(?:\x1B[@-_]|[\x80-\x9F])[0-?]*[ -/]*[@-~]")
     return ansi_escape.sub("", line)
 
 
-def ansi_colorify(line):
+def ansi_colorify(line: str) -> str:
     """Change the color of the line to red."""
     return f"\033[31m{line}\033[0m"
 
 
-def prepare_src_dst(src: pathlib.Path, dst: pathlib.Path | None) -> tuple[pathlib.Path, pathlib.Path]:
+def prepare_src_dst(src: pathlib.Path, dst: Optional[pathlib.Path] = None) -> tuple[pathlib.Path, pathlib.Path]:
     """Basic checks and preparation before using the source and destination."""
     # If destination isn't provided, then make it equal to the source.
     if dst is None:
