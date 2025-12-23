@@ -64,7 +64,7 @@ Options:
 Usage: tagpatch artist-name [OPTIONS]
 
 A patch which replaces existing delimiters in the `Artist` tag with the `/`
-seperator.
+separator.
 
 Options:
 -s, --src PATH    [default: /home/icewreck]

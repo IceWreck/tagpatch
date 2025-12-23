@@ -1,6 +1,5 @@
 import pathlib
 import re
-from typing import Optional
 
 KNOWN_TRACK_EXTENSIONS = {".ogg", ".mp3", ".m4a", ".flac", ".opus", ".wav"}
 
@@ -50,7 +49,7 @@ def ansi_colorify(line: str) -> str:
     return f"\033[31m{line}\033[0m"
 
 
-def prepare_src_dst(src: pathlib.Path, dst: Optional[pathlib.Path] = None) -> tuple[pathlib.Path, pathlib.Path]:
+def prepare_src_dst(src: pathlib.Path, dst: pathlib.Path | None = None) -> tuple[pathlib.Path, pathlib.Path]:
     """Basic checks and preparation before using the source and destination."""
     if dst is None:
         dst = src

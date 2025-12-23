@@ -10,7 +10,7 @@ from tagpatch.types import Table
 
 
 class ArtistNamePatch(patch.Patch):
-    _HELP_TEXT = "A patch which replaces existing delimiters in the `Artist` tag with the `/` seperator."
+    _HELP_TEXT = "A patch which replaces existing delimiters in the `Artist` tag with the `/` separator."
     TAG_NAME = "Artist"
     NEW_DELIMITER = "/"
     OLD_DELIMITERS = [",", "//", ";"]
@@ -28,8 +28,8 @@ class ArtistNamePatch(patch.Patch):
     def replace(cls, original: str) -> str:
         modified = original
         for delimiter in cls.OLD_DELIMITERS:
-            seperated = modified.split(delimiter)
-            modified = cls.NEW_DELIMITER.join([item.strip() for item in seperated])
+            separated = modified.split(delimiter)
+            modified = cls.NEW_DELIMITER.join([item.strip() for item in separated])
         return modified
 
     def prepare(self) -> Table:

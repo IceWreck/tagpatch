@@ -1,6 +1,5 @@
 import pathlib
 import shutil
-from typing import Optional
 
 import music_tag
 import typer
@@ -24,7 +23,7 @@ class EmbedLyricsPatch(patch.Patch):
         return cls._HELP_TEXT
 
     @staticmethod
-    def lrc_path(src_file: pathlib.Path) -> Optional[pathlib.Path]:
+    def lrc_path(src_file: pathlib.Path) -> pathlib.Path | None:
         """Returns the path of lrc file for the corresponding src file, if exists."""
         if not src_file.is_file():
             raise ValueError("src_file parameter must be a file")
