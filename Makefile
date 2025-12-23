@@ -10,13 +10,13 @@ format:
 	uv tool run ruff format # format
 
 run:
-	python -m tagpatch
+	uv run tagpatch
 
 lint:
 	uv tool run ruff check
 
 mypy:
-	mypy ./tagpatch
+	uv run mypy ./tagpatch
 
 develop:
 	uv venv
@@ -38,7 +38,7 @@ build:
 	uv build
 
 test:
-	python -m unittest
+	uv run unittest
 
 publish: build
 	uv publish
