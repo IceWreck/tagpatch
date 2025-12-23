@@ -2,8 +2,6 @@ import pathlib
 import re
 from typing import Optional
 
-import click
-
 KNOWN_TRACK_EXTENSIONS = {".ogg", ".mp3", ".m4a", ".flac", ".opus", ".wav"}
 
 
@@ -54,18 +52,13 @@ def ansi_colorify(line: str) -> str:
 
 def prepare_src_dst(src: pathlib.Path, dst: Optional[pathlib.Path] = None) -> tuple[pathlib.Path, pathlib.Path]:
     """Basic checks and preparation before using the source and destination."""
-    # If destination isn't provided, then make it equal to the source.
     if dst is None:
         dst = src
-    # Create destination if it doesn't exist.
     if not dst.exists():
         if dst.suffix == "":
-            # It is a directory.
             dst.mkdir(parents=True, exist_ok=True)
         else:
-            # It is a file.
             dst.touch()
-    # Source and destination must be of the same type.
     if not ((src.is_dir() and dst.is_dir()) or (src.is_file() and dst.is_file())):
-        raise click.BadParameter("Source and destination must be both files or both directories.")
+        raise ValueError("Source and destination must be both files or both directories.")
     return src, dst

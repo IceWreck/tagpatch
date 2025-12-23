@@ -38,7 +38,7 @@ class TestArtistName(unittest.TestCase):
 
     def test_artist_name_patch(self):
         patch = artist_name.ArtistNamePatch(self.src, self.dst, nested=True)
-        table = patch.prepare()
+        patch.prepare()
         dst_track_file = self.dst / "test.mp3"
         patch.apply()
 

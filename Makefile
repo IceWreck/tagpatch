@@ -6,14 +6,13 @@ PROJECT_NAME := tagpatch
 .PHONY: run format build test
 
 format:
-	uv tool run ruff check --select I --fix # fix import
 	uv tool run ruff format # format
 
 run:
 	uv run tagpatch
 
 lint:
-	uv tool run ruff check
+	uv tool run ruff check --fix
 
 mypy:
 	uv run mypy ./tagpatch

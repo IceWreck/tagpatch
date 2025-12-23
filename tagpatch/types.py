@@ -1,3 +1,3 @@
-from typing import Iterable, Mapping
+from typing import Any
 
-Table = Mapping[str, Iterable] | Iterable[Iterable]
+Table = list[list[Any]]

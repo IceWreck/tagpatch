@@ -2,9 +2,8 @@ import pathlib
 import shutil
 from typing import Optional
 
-import click
 import music_tag
-import mutagen
+import typer
 
 from tagpatch import utils
 from tagpatch.patches import patch
@@ -54,36 +53,30 @@ class EmbedLyricsPatch(patch.Patch):
     def apply(self) -> None:
         change_log: str = "\n"
 
-        # Run with a progressbar.
-        with click.progressbar(self.tracks) as bar:
-            for track in bar:
-                src_file = track[0]
-                dst_file = track[1]
+        for track in self.tracks:
+            src_file = track[0]
+            dst_file = track[1]
 
-                try:
-                    lrc_file = self.lrc_path(src_file)
+            try:
+                lrc_file = self.lrc_path(src_file)
 
-                    # If src_file is not equal to dst_file then copy src_file to dst_file first.
-                    dst_file.touch()
-                    if not src_file.samefile(dst_file):
-                        shutil.copy2(src_file, dst_file)
-                        change_log += f"Copied - {dst_file}\n"
+                dst_file.touch()
+                if not src_file.samefile(dst_file):
+                    shutil.copy2(src_file, dst_file)
+                    change_log += f"Copied - {dst_file}\n"
 
-                    # Read the .lrc file
-                    modified_tag = ""
-                    if lrc_file is not None:
-                        with open(lrc_file, "r") as lrcf:
-                            modified_tag = lrcf.read()
+                modified_tag = ""
+                if lrc_file is not None:
+                    with open(lrc_file, "r") as lrcf:
+                        modified_tag = lrcf.read()
 
-                    # Change tags in dst_file.
-                    f: mutagen.FileType = music_tag.load_file(dst_file)
-                    original_tag: str = str(f[self.TAG_NAME])
-                    if original_tag != modified_tag:
-                        f[self.TAG_NAME] = modified_tag
-                        f.save()
-                        change_log += f"Patched - {dst_file}\n"
-                except Exception as e:
-                    change_log += f"Error - failed to patch {dst_file}: {e}\n"
+                f = music_tag.load_file(dst_file)
+                original_tag: str = str(f[self.TAG_NAME])
+                if original_tag != modified_tag:
+                    f[self.TAG_NAME] = modified_tag
+                    f.save()
+                    change_log += f"Patched - {dst_file}\n"
+            except Exception as e:
+                change_log += f"Error - failed to patch {dst_file}: {e}\n"
 
-        # Print the changelog.
-        click.echo(change_log)
+        typer.echo(change_log)
