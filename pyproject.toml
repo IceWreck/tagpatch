@@ -30,6 +30,27 @@ indent-width = 4
 target-version = "py310"
 extend-include = ["*.ipynb"]
 
+[tool.ruff.lint]
+extend-select = [
+    "F",
+    "W",
+    "E",
+    "I",
+    "UP",
+    "C4",
+    "FA",
+    "ISC",
+    "ICN",
+    "RET",
+    "SIM",
+    "TID",
+    "TC",
+    "PTH",
+    "TD",
+    "NPY",
+]
+
+
 [tool.ruff.format]
 indent-style = "space"
 quote-style = "double"
@@ -40,7 +61,4 @@ strict = true
 ignore_missing_imports = true
 
 [dependency-groups]
-dev = [
-    "mypy>=1.14.1",
-    "types-tabulate>=0.9.0.20241207",
-]
+dev = ["mypy>=1.14.1", "types-tabulate>=0.9.0.20241207"]

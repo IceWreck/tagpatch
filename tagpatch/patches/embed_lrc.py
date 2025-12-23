@@ -66,8 +66,7 @@ class EmbedLyricsPatch(patch.Patch):
 
                 modified_tag = ""
                 if lrc_file is not None:
-                    with open(lrc_file, "r") as lrcf:
-                        modified_tag = lrcf.read()
+                    modified_tag = lrc_file.read_text()
 
                 f = music_tag.load_file(dst_file)
                 original_tag: str = str(f[self.TAG_NAME])

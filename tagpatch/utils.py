@@ -15,10 +15,7 @@ def get_tracks(src: pathlib.Path, dst: pathlib.Path, nested: bool = False) -> li
     tracks: list[tuple[pathlib.Path, pathlib.Path]] = []
 
     if src.is_dir():
-        if nested:
-            files_list = pathlib.Path(src).rglob("*")
-        else:
-            files_list = pathlib.Path(src).iterdir()
+        files_list = pathlib.Path(src).rglob("*") if nested else pathlib.Path(src).iterdir()
 
         overwrite_src: bool = src.samefile(dst)
 
