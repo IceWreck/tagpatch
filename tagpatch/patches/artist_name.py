@@ -1,3 +1,4 @@
+import dataclasses
 import pathlib
 import shutil
 
@@ -9,6 +10,15 @@ from tagpatch.patches import patch
 from tagpatch.types import Table
 
 
+@dataclasses.dataclass
+class _ArtistChange:
+    src: pathlib.Path
+    dst: pathlib.Path
+    original: str
+    modified: str
+    has_change: bool
+
+
 class ArtistNamePatch(patch.Patch):
     _HELP_TEXT = "A patch which replaces existing delimiters in the `Artist` tag with the `/` separator."
     TAG_NAME = "Artist"
@@ -17,8 +27,8 @@ class ArtistNamePatch(patch.Patch):
 
     def __init__(self, src: pathlib.Path, dst: pathlib.Path, nested: bool):
         super().__init__()
-        self.table: Table = []
-        self.tracks = utils.get_tracks(src, dst, nested)  # [(absolute_src.mp3, absolute_dst.mp3), (), ...]
+        self.tracks = utils.get_tracks(src, dst, nested)
+        self._changes: list[_ArtistChange] = []
 
     @classmethod
     def help(cls) -> str:
@@ -41,12 +51,21 @@ class ArtistNamePatch(patch.Patch):
             f = music_tag.load_file(src_file)
             original_tag: str = str(f[self.TAG_NAME])
             modified_tag: str = self.replace(original_tag)
+
             colored_modified_tag = modified_tag
             if original_tag != modified_tag:
                 colored_modified_tag = f"\033[31m{modified_tag}\033[0m"
 
+            self._changes.append(_ArtistChange(
+                src=src_file,
+                dst=dst_file,
+                original=original_tag,
+                modified=modified_tag,
+                has_change=original_tag != modified_tag,
+            ))
+
             table.append([original_tag, colored_modified_tag, src_file, dst_file])
-        self.table = table
+
         return table
 
     @property
@@ -56,24 +75,21 @@ class ArtistNamePatch(patch.Patch):
     def apply(self) -> None:
         change_log: str = "\n"
 
-        for track in self.tracks:
-            src_file = track[0]
-            dst_file = track[1]
+        for change in self._changes:
+            if not change.has_change:
+                continue
 
             try:
-                dst_file.touch()
-                if not src_file.samefile(dst_file):
-                    shutil.copy2(src_file, dst_file)
-                    change_log += f"Copied - {dst_file}\n"
+                change.dst.touch()
+                if not change.src.samefile(change.dst):
+                    shutil.copy2(change.src, change.dst)
+                    change_log += f"Copied - {change.dst}\n"
 
-                f = music_tag.load_file(dst_file)
-                original_tag: str = str(f[self.TAG_NAME])
-                modified_tag: str = self.replace(original_tag)
-                if original_tag != modified_tag:
-                    f[self.TAG_NAME] = modified_tag
-                    f.save()
-                    change_log += f"Patched - {dst_file}\n"
+                f = music_tag.load_file(change.dst)
+                f[self.TAG_NAME] = change.modified
+                f.save()
+                change_log += f"Patched - {change.dst}\n"
             except Exception as e:
-                change_log += f"Error - failed to patch {dst_file}: {e}\n"
+                change_log += f"Error - failed to patch {change.dst}: {e}\n"
 
         typer.echo(change_log)

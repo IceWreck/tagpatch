@@ -1,3 +1,4 @@
+import dataclasses
 import pathlib
 import shutil
 
@@ -9,14 +10,21 @@ from tagpatch.patches import patch
 from tagpatch.types import Table
 
 
+@dataclasses.dataclass
+class _EmbedChange:
+    src: pathlib.Path
+    dst: pathlib.Path
+    lrc_file: pathlib.Path | None
+
+
 class EmbedLyricsPatch(patch.Patch):
     _HELP_TEXT: str = "A patch which embeds .lrc files of the same name into the track file."
     TAG_NAME: str = "lyrics"
 
     def __init__(self, src: pathlib.Path, dst: pathlib.Path, nested: bool) -> None:
         super().__init__()
-        self.table: Table = []
-        self.tracks = utils.get_tracks(src, dst, nested)  # [(absolute_src.mp3, absolute_dst.mp3), (), ...]
+        self.tracks = utils.get_tracks(src, dst, nested)
+        self._changes: list[_EmbedChange] = []
 
     @classmethod
     def help(cls) -> str:
@@ -33,17 +41,25 @@ class EmbedLyricsPatch(patch.Patch):
         return None
 
     def prepare(self) -> Table:
+        table = []
         for track in self.tracks:
             src_file = track[0]
             dst_file = track[1]
             lrc_file = self.lrc_path(src_file)
 
+            self._changes.append(_EmbedChange(
+                src=src_file,
+                dst=dst_file,
+                lrc_file=lrc_file,
+            ))
+
             colored_lrc_path = ""
             if lrc_file is not None:
                 colored_lrc_path = utils.ansi_colorify(str(lrc_file))
 
-            self.table.append([colored_lrc_path, src_file, dst_file])
-        return self.table
+            table.append([colored_lrc_path, src_file, dst_file])
+
+        return table
 
     @property
     def table_headers(self) -> list[str]:
@@ -52,29 +68,24 @@ class EmbedLyricsPatch(patch.Patch):
     def apply(self) -> None:
         change_log: str = "\n"
 
-        for track in self.tracks:
-            src_file = track[0]
-            dst_file = track[1]
-
+        for change in self._changes:
             try:
-                lrc_file = self.lrc_path(src_file)
-
-                dst_file.touch()
-                if not src_file.samefile(dst_file):
-                    shutil.copy2(src_file, dst_file)
-                    change_log += f"Copied - {dst_file}\n"
+                change.dst.touch()
+                if not change.src.samefile(change.dst):
+                    shutil.copy2(change.src, change.dst)
+                    change_log += f"Copied - {change.dst}\n"
 
                 modified_tag = ""
-                if lrc_file is not None:
-                    modified_tag = lrc_file.read_text()
+                if change.lrc_file is not None:
+                    modified_tag = change.lrc_file.read_text()
 
-                f = music_tag.load_file(dst_file)
+                f = music_tag.load_file(change.dst)
                 original_tag: str = str(f[self.TAG_NAME])
                 if original_tag != modified_tag:
                     f[self.TAG_NAME] = modified_tag
                     f.save()
-                    change_log += f"Patched - {dst_file}\n"
+                    change_log += f"Patched - {change.dst}\n"
             except Exception as e:
-                change_log += f"Error - failed to patch {dst_file}: {e}\n"
+                change_log += f"Error - failed to patch {change.dst}: {e}\n"
 
         typer.echo(change_log)

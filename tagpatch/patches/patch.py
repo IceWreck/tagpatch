@@ -10,17 +10,17 @@ class Patch(ABC):
     @classmethod
     @abstractmethod
     def help(cls) -> str:
-        """Help text for the patch."""
+        """Help text for patch."""
         raise NotImplementedError
 
     @abstractmethod
     def prepare(self) -> Table:
-        """Return a table of changes to be done without executing them."""
+        """Prepare patch data, store internally, return table for display."""
         raise NotImplementedError
 
     @abstractmethod
     def apply(self) -> None:
-        """Apply the patch."""
+        """Apply patch using internally stored data."""
         raise NotImplementedError
 
     @property
