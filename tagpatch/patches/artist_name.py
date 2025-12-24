@@ -56,13 +56,15 @@ class ArtistNamePatch(patch.Patch):
             if original_tag != modified_tag:
                 colored_modified_tag = f"\033[31m{modified_tag}\033[0m"
 
-            self._changes.append(_ArtistChange(
-                src=src_file,
-                dst=dst_file,
-                original=original_tag,
-                modified=modified_tag,
-                has_change=original_tag != modified_tag,
-            ))
+            self._changes.append(
+                _ArtistChange(
+                    src=src_file,
+                    dst=dst_file,
+                    original=original_tag,
+                    modified=modified_tag,
+                    has_change=original_tag != modified_tag,
+                )
+            )
 
             table.append([original_tag, colored_modified_tag, src_file, dst_file])
 

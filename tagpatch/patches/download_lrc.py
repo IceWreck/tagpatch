@@ -1,3 +1,4 @@
+import asyncio
 import dataclasses
 import logging
 import pathlib
@@ -41,9 +42,12 @@ class DownloadLrcPatch(patch.Patch):
     def get_metadata(src_file: pathlib.Path) -> dict[str, str | float | None]:
         """Extract metadata from audio file."""
         f = music_tag.load_file(src_file)
-        artist_raw = str(f["artist"]).strip()
-        album_raw = str(f["album"]).strip()
-        title_raw = str(f["title"]).strip()
+        if f is None:
+            return {"artist": None, "album": None, "title": None, "duration": None}
+
+        artist_raw = str(f.get("artist", "")).strip()
+        album_raw = str(f.get("album", "")).strip()
+        title_raw = str(f.get("title", "")).strip()
 
         artist = artist_raw if artist_raw else None
         album = album_raw if album_raw else None
@@ -60,7 +64,9 @@ class DownloadLrcPatch(patch.Patch):
     def has_embedded_lyrics(src_file: pathlib.Path) -> bool:
         """Check if lyrics are embedded in the audio file."""
         f = music_tag.load_file(src_file)
-        lyrics = str(f["lyrics"]).strip()
+        if f is None:
+            return False
+        lyrics = str(f.get("lyrics", "")).strip()
         return len(lyrics) > 0
 
     @staticmethod
@@ -76,10 +82,10 @@ class DownloadLrcPatch(patch.Patch):
         return txt_file.exists()
 
     @staticmethod
-    def fetch_lyrics_from_lrclib(
-        artist: str, title: str, album: str | None, duration: float | None
+    async def fetch_lyrics_from_lrclib(
+        client: httpx.AsyncClient, artist: str, title: str, album: str | None, duration: float | None
     ) -> tuple[str | None, str | None]:
-        """Fetch lyrics from lrclib API. Returns (synced_lyrics, plain_lyrics)."""
+        """Fetch lyrics from lrclib API asynchronously. Returns (synced_lyrics, plain_lyrics)."""
         params: dict[str, str | int] = {"artist_name": artist, "track_name": title}
         if album:
             params["album_name"] = album
@@ -90,7 +96,7 @@ class DownloadLrcPatch(patch.Patch):
         plain_lyrics = None
 
         try:
-            response = httpx.get(DownloadLrcPatch.API_BASE_URL, params=params, timeout=10.0)
+            response = await client.get(DownloadLrcPatch.API_BASE_URL, params=params, timeout=10.0)
             response.raise_for_status()
             data = response.json()
 
@@ -109,60 +115,82 @@ class DownloadLrcPatch(patch.Patch):
 
         return synced_lyrics, plain_lyrics
 
-    def prepare(self) -> Table:
-        table = []
-        for track in self.tracks:
-            src_file = track[0]
+    async def _process_track(self, client: httpx.AsyncClient, track: tuple[pathlib.Path, pathlib.Path]) -> _LyricChange:
+        """Process a single track and return the lyric change."""
+        src_file = track[0]
 
-            metadata = self.get_metadata(src_file)
-            artist = cast("str | None", metadata.get("artist"))
-            title = cast("str | None", metadata.get("title"))
-            album = cast("str | None", metadata.get("album"))
-            duration = cast("float | None", metadata.get("duration"))
+        metadata = self.get_metadata(src_file)
+        artist = cast("str | None", metadata.get("artist"))
+        title = cast("str | None", metadata.get("title"))
+        album = cast("str | None", metadata.get("album"))
+        duration = cast("float | None", metadata.get("duration"))
 
-            skip_reason = ""
-            action = ""
-            lyric_type = ""
+        skip_reason = ""
+        synced_lyrics = None
+        plain_lyrics = None
+        synced = False
 
-            synced_lyrics = None
-            plain_lyrics = None
-            synced = False
-
-            if not artist or not title:
-                skip_reason = "Missing metadata"
-            elif self.has_lrc_file(src_file):
-                skip_reason = ".lrc file exists"
-            elif self.has_txt_file(src_file):
-                skip_reason = ".txt file exists"
-            elif self.has_embedded_lyrics(src_file):
-                skip_reason = "Embedded lyrics"
+        if not artist or not title:
+            skip_reason = "Missing metadata"
+        elif self.has_lrc_file(src_file):
+            skip_reason = ".lrc file exists"
+        elif self.has_txt_file(src_file):
+            skip_reason = ".txt file exists"
+        elif self.has_embedded_lyrics(src_file):
+            skip_reason = "Embedded lyrics"
+        else:
+            synced_lyrics, plain_lyrics = await self.fetch_lyrics_from_lrclib(client, artist, title, album, duration)
+            if synced_lyrics:
+                synced = True
+            elif plain_lyrics:
+                synced = False
             else:
-                synced_lyrics, plain_lyrics = self.fetch_lyrics_from_lrclib(artist, title, album, duration)
-                if synced_lyrics:
-                    action = "Download"
-                    lyric_type = "synced (.lrc)"
-                    synced = True
-                elif plain_lyrics:
-                    action = "Download"
-                    lyric_type = "plain (.txt)"
-                    synced = False
-                else:
-                    skip_reason = "No lyrics found"
+                skip_reason = "No lyrics found"
 
-            self._changes.append(_LyricChange(
-                src=src_file,
-                skip_reason=skip_reason,
-                synced=synced,
-                lyrics=synced_lyrics if synced else plain_lyrics,
-            ))
+        return _LyricChange(
+            src=src_file,
+            skip_reason=skip_reason,
+            synced=synced,
+            lyrics=synced_lyrics if synced else plain_lyrics,
+        )
 
-            dst_name = src_file.with_suffix(".lrc" if synced else ".txt").name if action else ""
-            colored_action = utils.ansi_colorify(action if action else skip_reason)
-            colored_type = utils.ansi_colorify(lyric_type) if lyric_type else ""
+    def prepare(self) -> Table:
+        """Prepare lyrics download by processing tracks in parallel."""
 
-            table.append([src_file.name, dst_name, colored_action, colored_type])
+        async def prepare_async() -> Table:
+            table = []
+            semaphore = asyncio.Semaphore(15)  # Limit to 15 concurrent requests
 
-        return table
+            async def process_with_semaphore(track: tuple[pathlib.Path, pathlib.Path]) -> _LyricChange:
+                async with semaphore:
+                    return await self._process_track(client, track)
+
+            async with httpx.AsyncClient() as client:
+                tasks = [process_with_semaphore(track) for track in self.tracks]
+                changes = await asyncio.gather(*tasks)
+                self._changes.extend(changes)
+
+                for change in changes:
+                    action = ""
+                    lyric_type = ""
+
+                    if not change.skip_reason:
+                        if change.synced:
+                            action = "Download"
+                            lyric_type = "synced (.lrc)"
+                        else:
+                            action = "Download"
+                            lyric_type = "plain (.txt)"
+
+                    dst_name = change.src.with_suffix(".lrc" if change.synced else ".txt").name if action else ""
+                    colored_action = utils.ansi_colorify(action if action else change.skip_reason)
+                    colored_type = utils.ansi_colorify(lyric_type) if lyric_type else ""
+
+                    table.append([change.src.name, dst_name, colored_action, colored_type])
+
+            return table
+
+        return asyncio.run(prepare_async())
 
     @property
     def table_headers(self) -> list[str]:

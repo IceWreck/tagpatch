@@ -37,7 +37,7 @@ build:
 	uv build
 
 test:
-	uv run unittest
+	uv run python -m unittest discover tests
 
 publish: build
 	uv publish

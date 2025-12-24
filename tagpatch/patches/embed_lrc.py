@@ -47,11 +47,13 @@ class EmbedLyricsPatch(patch.Patch):
             dst_file = track[1]
             lrc_file = self.lrc_path(src_file)
 
-            self._changes.append(_EmbedChange(
-                src=src_file,
-                dst=dst_file,
-                lrc_file=lrc_file,
-            ))
+            self._changes.append(
+                _EmbedChange(
+                    src=src_file,
+                    dst=dst_file,
+                    lrc_file=lrc_file,
+                )
+            )
 
             colored_lrc_path = ""
             if lrc_file is not None:
