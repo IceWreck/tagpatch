@@ -66,14 +66,12 @@ class EmbedLyricsPatch(patch.Patch):
         return ["Lyric File", "Source", "Destination"]
 
     def apply(self) -> None:
-        change_log: str = "\n"
-
         for change in self._changes:
             try:
                 change.dst.touch()
                 if not change.src.samefile(change.dst):
                     shutil.copy2(change.src, change.dst)
-                    change_log += f"Copied - {change.dst}\n"
+                    typer.echo(f"Copied - {change.dst}")
 
                 modified_tag = ""
                 if change.lrc_file is not None:
@@ -84,8 +82,6 @@ class EmbedLyricsPatch(patch.Patch):
                 if original_tag != modified_tag:
                     f[self.TAG_NAME] = modified_tag
                     f.save()
-                    change_log += f"Patched - {change.dst}\n"
+                    typer.echo(f"Patched - {change.dst}")
             except Exception as e:
-                change_log += f"Error - failed to patch {change.dst}: {e}\n"
-
-        typer.echo(change_log)
+                typer.echo(f"Error - failed to patch {change.dst}: {e}")

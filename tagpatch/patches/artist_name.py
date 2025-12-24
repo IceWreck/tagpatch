@@ -73,8 +73,6 @@ class ArtistNamePatch(patch.Patch):
         return ["Original Tag", "Modified Tag", "Source", "Destination"]
 
     def apply(self) -> None:
-        change_log: str = "\n"
-
         for change in self._changes:
             if not change.has_change:
                 continue
@@ -83,13 +81,11 @@ class ArtistNamePatch(patch.Patch):
                 change.dst.touch()
                 if not change.src.samefile(change.dst):
                     shutil.copy2(change.src, change.dst)
-                    change_log += f"Copied - {change.dst}\n"
+                    typer.echo(f"Copied - {change.dst}")
 
                 f = music_tag.load_file(change.dst)
                 f[self.TAG_NAME] = change.modified
                 f.save()
-                change_log += f"Patched - {change.dst}\n"
+                typer.echo(f"Patched - {change.dst}")
             except Exception as e:
-                change_log += f"Error - failed to patch {change.dst}: {e}\n"
-
-        typer.echo(change_log)
+                typer.echo(f"Error - failed to patch {change.dst}: {e}")

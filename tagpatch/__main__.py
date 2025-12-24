@@ -109,19 +109,10 @@ def download_lrc(
         show_default=True,
         resolve_path=True,
     ),
-    dst: pathlib.Path | None = typer.Option(
-        None,
-        "-d",
-        "--dst",
-        writable=True,
-        resolve_path=True,
-    ),
     assume_yes: bool = typer.Option(False, "-y", "--assume-yes"),
     nested: bool = typer.Option(False, "-n", "--nested"),
 ) -> None:
-    src, dst = utils.prepare_src_dst(src, dst)
-
-    patch = download_lrc_patch.DownloadLrcPatch(src, dst, nested)
+    patch = download_lrc_patch.DownloadLrcPatch(src, nested)
     table = patch.prepare()
     if len(table) == 0:
         typer.echo("No music files found in src.")
