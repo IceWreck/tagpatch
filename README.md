@@ -34,42 +34,68 @@ The changes will be highlighted in red. Confirm to continue.
 ## Usage
 
 ```
-[icewreck@zacian ~]$ tagpatch
-Usage: tagpatch [OPTIONS] COMMAND [ARGS]...
+$ tagpatch
+ Usage: tagpatch [OPTIONS] COMMAND [ARGS]...
 
-Options:
---help  Show this message and exit.
+ CLI tool which applies common patches to music tags.
 
-Commands:
-artist-name  A patch which replaces existing delimiters in the `Artist`...
-embed-lrc    A patch which embeds .lrc files of the same name into the...
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --install-completion          Install completion for the current shell.      │
+│ --show-completion             Show completion for the current shell, to copy │
+│                               it or customize the installation.              │
+│ --help                        Show this message and exit.                    │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ───────────────────────────────────────────────────────────────────╮
+│ artist-name    A patch which replaces existing delimiters in the `Artist`    │
+│                tag with the `/` separator.                                   │
+│ embed-lrc      A patch which embeds .lrc files of the same name into the     │
+│                track file.                                                   │
+│ download-lrc   A patch which downloads .lrc files from lrclib.net if not     │
+│                present.                                                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
 ```
-[icewreck@zacian ~]$ tagpatch embed-lrc --help
-Usage: tagpatch embed-lrc [OPTIONS]
+$ tagpatch embed-lrc --help
+ Usage: tagpatch embed-lrc [OPTIONS]
 
-A patch which embeds .lrc files of the same name into the track file.
+ A patch which embeds .lrc files of the same name into the track file.
 
-Options:
--s, --src PATH    [default: /home/icewreck]
--d, --dst PATH
--y, --assume-yes
--n, --nested
---help            Show this message and exit.
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --src         -s      PATH  [default: /home/icewreck/Development/tagpatch]   │
+│ --dst         -d      PATH                                                   │
+│ --assume-yes  -y                                                             │
+│ --nested      -n                                                             │
+│ --help                      Show this message and exit.                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
 ```
-[icewreck@zacian ~]$ tagpatch artist-name --help
-Usage: tagpatch artist-name [OPTIONS]
+$ tagpatch artist-name --help
+ Usage: tagpatch artist-name [OPTIONS]
 
-A patch which replaces existing delimiters in the `Artist` tag with the `/`
-separator.
+ A patch which replaces existing delimiters in the `Artist` tag with the `/`
+ separator.
 
-Options:
--s, --src PATH    [default: /home/icewreck]
--d, --dst PATH
--y, --assume-yes
--n, --nested
---help            Show this message and exit.
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --src         -s      PATH  [default: /home/icewreck/Development/tagpatch]   │
+│ --dst         -d      PATH                                                   │
+│ --assume-yes  -y                                                             │
+│ --nested      -n                                                             │
+│ --help                      Show this message and exit.                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+```
+$ tagpatch download-lrc --help
+ Usage: tagpatch download-lrc [OPTIONS]
+
+ A patch which downloads .lrc files from lrclib.net if not present.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --src         -s      PATH  [default: /home/icewreck/Development/tagpatch]   │
+│ --assume-yes  -y                                                             │
+│ --nested      -n                                                             │
+│ --help                      Show this message and exit.                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
 ```
