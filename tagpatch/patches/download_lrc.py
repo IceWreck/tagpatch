@@ -182,11 +182,11 @@ class DownloadLrcPatch(patch.Patch):
                             action = "Download"
                             lyric_type = "plain (.txt)"
 
-                    dst_name = change.src.with_suffix(".lrc" if change.synced else ".txt").name if action else ""
+                    dst_path = str(change.src.with_suffix(".lrc" if change.synced else ".txt")) if action else ""
                     colored_action = utils.ansi_colorify(action if action else change.skip_reason)
                     colored_type = utils.ansi_colorify(lyric_type) if lyric_type else ""
 
-                    table.append([change.src.name, dst_name, colored_action, colored_type])
+                    table.append([str(change.src), dst_path, colored_action, colored_type])
 
             return table
 
