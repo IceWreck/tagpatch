@@ -12,6 +12,12 @@ sudo wget https://github.com/IceWreck/tagpatch/releases/download/v0.1.3/tagpatch
   -O /usr/local/bin/tagpatch && sudo chmod +x /usr/local/bin/tagpatch
 ```
 
+**Using uv**
+
+```
+uvx tagpatch
+```
+
 
 **Using pip**
 
